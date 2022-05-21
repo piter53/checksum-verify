@@ -1,21 +1,38 @@
 'use strict';
 
-// With background scripts you can communicate with popup
-// and contentScript files.
-// For more information on background script,
-// See https://developer.chrome.com/extensions/background_pages
+const HashThrough = require('hash-through');
+const crypto = require('crypto');
+const hashThrough = HashThrough(createHash);
+const digestType = 'hex';
+const algType = 'sha256';
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.type === 'GREETINGS') {
-    const message = `Hi ${
-      sender.tab ? 'Con' : 'Pop'
-    }, my name is Bac. I am from Background. It's great to hear from you.`;
+/**
+ * Auxiliary function required by hash-through
+ * @returns {Hash}
+ */
+function createHash(){
+    return crypto.createHash(algType);
+}
 
-    // Log message coming from the `request` parameter
-    console.log(request.payload.message);
-    // Send a response message
-    sendResponse({
-      message,
-    });
-  }
+/**
+ * Greet the user upon install/update
+ */
+chrome.runtime.onInstalled.addListener(() => {
+    chrome.tabs.create({'url': 'html/welcome-page.html'});
+});
+
+let downloads = {};
+
+chrome.downloads.onCreated.addListener((downloadItem) => {
+    console.debug(downloadItem);
+    // downloads[downloadItem.id].filename = "file://" + downloadItem.filename;
+    const response = fetch(downloadItem.filename);
+    response.body.pipe(hashThrough);
+    // req.responseType = 'arraybuffer';
+    // req.open('GET', downloads[downloadItem.id].filename, true);
+    // req.addEventListener('progress', processFile)
+})
+
+hashThrough.on('finish', () => {
+    console.log("HashThrough digest at time: " + performance.now() / 1000 + "\n" + hashThrough.digest(digestType));
 });

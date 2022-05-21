@@ -1,6 +1,6 @@
 # <img src="public/icons/icon_48.png" width="45" align="left"> Checksum Verify
 
-My Chrome Extension
+Automatically verify cryptographic digests of downloaded and uploaded files
 
 ## Features
 

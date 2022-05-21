@@ -4,6 +4,9 @@
 # production
 /build
 
+# arch diagrams
+arch-diagram*
+
 # misc
 .DS_Store
 
