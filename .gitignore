@@ -10,4 +10,7 @@ arch-diagram*
 # misc
 .DS_Store
 
+# test files
+test/
+
 npm-debug.log*
