@@ -39,6 +39,9 @@ chrome.downloads.onCreated.addListener((downloadItem) => {
 chrome.downloads.onChanged.addListener(async (downloadDelta) => {
     console.debug("Download changed!");
     console.debug(downloadDelta);
+    if (downloads[downloadDelta.id] === undefined) {
+        downloads[downloadDelta.id] = {};
+    }
     if (downloadDelta.filename) {
         const filename = downloadDelta.filename.current;
         if (filename !== "") {
@@ -49,10 +52,12 @@ chrome.downloads.onChanged.addListener(async (downloadDelta) => {
         if (state === "complete") {
             let id = downloadDelta.id;
             downloads[id].state = "complete";
-            if (downloads[id].checksums === undefined || downloads[id].algorithms === undefined) {
+            if (downloads[id].checksums === undefined ||
+                downloads[id].algorithms === undefined) {
                 console.log("Cannot verify the hash value!")
             } else {
-                let computedHashes = computeHashes(downloads[id].filename, getHashesFromNames(downloads[id].tab.algorithms));
+                let computedHashes = await computeHashes(downloads[id].filename,
+                    getHashesFromNames(downloads[id].tab.algorithms));
                 downloads[id].computedHashes = computedHashes;
                 if (downloads[id].tab.checksums.some(value => computedHashes.includes(value))) {
                     console.log("The checksum is valid!");
@@ -62,6 +67,7 @@ chrome.downloads.onChanged.addListener(async (downloadDelta) => {
             }
         } else if (state === "interrupted") {
             delete downloads[downloadDelta.id];
+            console.log("File removed!");
         }
     }
 })
@@ -116,43 +122,48 @@ function getHashFromName(name) {
  * @param hashes array of hash objects
  * @returns array of the file hashes, with hash object as a key
  */
-function computeHashes(filename, hashes) {
+async function computeHashes(filename, hashes) {
     console.debug("Inside computeHashes");
-    return fetch(filename)
-        .then(response => {
-            if (response.ok) {
-                const reader = response.body.getReader();
-                let totalByteLen = 0;
-                let hashValues = [];
-                const read = () => {
-                    reader.read().then(({done, value}) => {
-                        if (done) {
-                            hashes.forEach((hash) =>{
-                                hashValues[hash] = hash.finalize().toString().toLowerCase();
-                            });
-                            console.log("Hash for file: " + filename + " is:\n" + hashValues.toString());
-                            console.debug("Total size (bytes): " + totalByteLen);
-                            reader.releaseLock();
-                        } else {
-                            // console.debug("New chunk of length: " + value.byteLength);
-                            totalByteLen += value.byteLength;
-                            for (let hash in hashes) {
-                                hash.update(cryptoJs.lib.WordArray.create(value));
-                            }
-                            read();
-                        }
-                    }).catch(reason => {
-                        console.debug(reason);
-                    });
-                }
-                read();
+    const response = await fetch(filename);
+    const reader = response.body.getReader();
+    let totalByteLen = 0;
+    const hashValues = [];
+
+    const read = async () => {
+        const {done, value} = await reader.read();
+
+        try {
+            if (done) {
+                hashes.forEach((hash) => {
+                    hashValues[hash] = hash.finalize().toString().toLowerCase();
+                });
+                console.log(
+                    "Hash for file: " + filename + " is:\n" + hashValues.toString()
+                );
+                console.debug("Total size (bytes): " + totalByteLen);
+                reader.releaseLock();
             } else {
-                throw new Error(response.status);
+                // console.debug("New chunk of length: " + value.byteLength);
+                totalByteLen += value.byteLength;
+                for (let hash in hashes) {
+                    hash.update(cryptoJs.lib.WordArray.create(value));
+                }
+                await read();
             }
-        })
-        .catch((reason) => {
-            console.error(reason);
-        });
+        } catch (e) {
+            console.debug(e);
+        }
+    };
+
+    try {
+        if (!response.ok) {
+            throw new Error(response.status);
+        }
+        await read(reader, hashValues, totalByteLen, filename, hashes);
+        return hashValues;
+    } catch (e) {
+        console.error(e);
+    }
 }
 
 
