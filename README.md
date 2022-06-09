@@ -4,8 +4,7 @@ Automatically verify cryptographic digests of downloaded and uploaded files
 
 ## Features
 
-- Feature 1
-- Feature 2
+TODO
 
 ## Install
 
@@ -13,7 +12,7 @@ Automatically verify cryptographic digests of downloaded and uploaded files
 
 ## Contribution
 
-Suggestions and pull requests are welcomed!.
+Suggestions and pull requests are welcomed!
 
 ---
 

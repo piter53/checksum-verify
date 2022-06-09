@@ -2,6 +2,7 @@
 
 const {merge} = require('webpack-merge');
 const webpack = require("webpack");
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const common = require('./webpack.common.js');
 const PATHS = require('./paths');
@@ -19,13 +20,8 @@ const config = (env, argv) =>
             }
         },
         plugins: [
-            new webpack.DefinePlugin({
-                'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-                'process.env.MY_ENV': JSON.stringify(process.env.MY_ENV),
-                'process.env.NODE_DEBUG': JSON.stringify(process.env.NODE_DEBUG),
-            }),
-            new webpack.ProvidePlugin({
-                process: 'process/browser'
+            new HtmlWebpackPlugin({
+                template: "src/popup.html"
             })
         ],
         devtool: argv.mode === 'production' ? false : 'source-map',

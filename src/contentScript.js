@@ -28,13 +28,8 @@ function extractPattern(pattern) {
     });
 
     // Print all matching values on debug level
-    console.debug(set.size + " matches for pattern: \"" + pattern + "\"");
-    // let iterator = set.values();
-    // let result = iterator.next();
-    // while (!result.done) {
-    //     console.debug(result.value);
-    //     result = iterator.next();
-    // }
+    console.log(set.size + " matches for pattern: \"" + pattern + "\"");
+    console.log(Array.from(set.values()));
     return set;
 }
 

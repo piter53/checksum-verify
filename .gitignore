@@ -13,4 +13,7 @@ arch-diagram*
 # test files
 test/
 
+# old icons
+/public/icons/old-icons
+
 npm-debug.log*

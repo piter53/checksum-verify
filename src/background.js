@@ -1,11 +1,15 @@
 'use strict';
 
+// TODO optimise imports so that they only include hashing libraries
 import * as cryptoJs from "crypto-js";
 
 // Keep data extracted from tabs by content script
 let tabsData = [];
 // Keep data about ongoing downloads
 let downloads = {};
+
+// Remove all previous alarms when a new process is started
+chrome.alarms.clearAll();
 
 /**
  * Greet the user upon install/update
@@ -59,7 +63,7 @@ chrome.downloads.onChanged.addListener(async (downloadDelta) => {
                 let computedHashes = await computeHashes(downloads[id].filename,
                     getHashesFromNames(downloads[id].tab.algorithms));
                 downloads[id].computedHashes = computedHashes;
-                if (downloads[id].tab.checksums.some(value => computedHashes.includes(value))) {
+                if (downloads[id].checksums.filter(value => computedHashes.includes(value))) {
                     console.log("The checksum is valid!");
                 } else {
                     console.log("The checksum is NOT valid!");
@@ -67,10 +71,10 @@ chrome.downloads.onChanged.addListener(async (downloadDelta) => {
             }
         } else if (state === "interrupted") {
             delete downloads[downloadDelta.id];
-            console.log("File removed!");
+            console.log("Download interrupted!");
         }
     }
-})
+});
 
 /**
  * Wrapper function around getHashFromName() that supplies hash objects out of multiple names
@@ -117,17 +121,18 @@ function getHashFromName(name) {
 }
 
 /**
- * Fetch the file given filename, and compute a checksum from the acquired stream.
+ * Fetch the file given filename and compute checksums from the acquired stream,
+ * based on passed hash objects
  * @param filename
  * @param hashes array of hash objects
- * @returns array of the file hashes, with hash object as a key
+ * @returns array of the file hash values
  */
 async function computeHashes(filename, hashes) {
     console.debug("Inside computeHashes");
     const response = await fetch(filename);
     const reader = response.body.getReader();
     let totalByteLen = 0;
-    const hashValues = [];
+    const hashValuesMap = new Map();
 
     const read = async () => {
         const {done, value} = await reader.read();
@@ -135,19 +140,20 @@ async function computeHashes(filename, hashes) {
         try {
             if (done) {
                 hashes.forEach((hash) => {
-                    hashValues[hash] = hash.finalize().toString().toLowerCase();
+                    hashValuesMap.set(hash, hash.finalize().toString().toLowerCase());
                 });
                 console.log(
-                    "Hash for file: " + filename + " is:\n" + hashValues.toString()
+                    "Computed hashes for file: " + filename + " :\n"
                 );
+                console.log(Object.values(hashValuesMap));
                 console.debug("Total size (bytes): " + totalByteLen);
                 reader.releaseLock();
             } else {
                 // console.debug("New chunk of length: " + value.byteLength);
                 totalByteLen += value.byteLength;
-                for (let hash in hashes) {
+                hashes.forEach((hash) => {
                     hash.update(cryptoJs.lib.WordArray.create(value));
-                }
+                });
                 await read();
             }
         } catch (e) {
@@ -159,14 +165,16 @@ async function computeHashes(filename, hashes) {
         if (!response.ok) {
             throw new Error(response.status);
         }
-        await read(reader, hashValues, totalByteLen, filename, hashes);
-        return hashValues;
+        await read();
+        return Array.from(hashValuesMap.values());
     } catch (e) {
         console.error(e);
     }
 }
 
-
+/**
+ * Listen for messages coming from content filter and unpack any relevant data
+ */
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     switch (message.type) {
         case "content":
