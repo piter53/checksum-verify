@@ -3,13 +3,11 @@
 const CHECKSUM_VALUE_REGEX = /[a-f\d]{32,128}|[A-F\d]{32,128}/g;
 const CHECKSUM_SIZE_ARRAY = [32, 40, 56, 64, 96, 128];
 const CHECKSUM_ALG_REGEX = /(sha)-?(1|224|256|384|512)|(md)-?5|(sha3-)(224|256|384|512)/gi;
-const DANGEROUS_EXTENSIONS = ["dmg", "exe", "msi", "pkg", "iso", "zip", "tar.xz"
-    , "tar.gz", "tar.bz2", "tar", "deb", "rpm", "appimage"];
-
-//TODO variable should be set from within settings/options page
-// chrome.storage.sync.set({onlyMatchDangerous: false}, () => {
-//     console.log("value set");
-// });
+const DANGEROUS_EXTENSIONS = ["apk", "jar", "ahk", "bms", "oxe", "sk", "xbe",
+    "workflow", "elf", "app", "out", "dmg", "exe", "bat", "com", "cmd", "inf",
+    "ipa", "osx", "pif", "run", "msi", "pkg", "iso", "zip", "tar.xz", "tar.gz",
+    "tar.bz2", "tar.bz", "tar", "rar", "deb", "rpm", "appimage", "flatpakref",
+    "flatpak", "snap"];
 
 let checksums = [];
 let algorithms = [];
@@ -28,8 +26,8 @@ function extractPattern(pattern) {
     });
 
     // Print all matching values on debug level
-    console.log(set.size + " matches for pattern: \"" + pattern + "\"");
-    console.log(Array.from(set.values()));
+    console.debug(set.size + " matches for pattern: \"" + pattern + "\"");
+    console.debug(Array.from(set.values()));
     return set;
 }
 
@@ -71,12 +69,7 @@ function filterHashes(values) {
  * @returns {boolean}
  */
 function isFileExtensionDangerous(filename) {
-    DANGEROUS_EXTENSIONS.forEach((value) => {
-        if (filename.toLowerCase().endsWith(value.toLowerCase())) {
-            return true;
-        }
-    });
-    return false;
+    return DANGEROUS_EXTENSIONS.some(value => filename.toLowerCase().endsWith(value.toLowerCase()));
 }
 
 /**
@@ -85,17 +78,13 @@ function isFileExtensionDangerous(filename) {
  * provide data about tab from which the download has been initiated.
  * @returns {Set<any>}
  */
-function extractLinks() {
+async function extractLinks() {
     let urls = new Set();
-    let extractAll = true;
-    // chrome.storage.sync.get(onlyMatchDangerous, ({onlyMatchDangerous}) => {
-    //     console.log("value received: " + onlyMatchDangerous);
-    //     extractAll = onlyMatchDangerous;
-    // });
+    let onlyVerifyDangerous = await chrome.storage.sync.get(["onlyVerifyDangerous"]);
     document.querySelectorAll("a").forEach((element) => {
         if (element.hasAttribute("href")) {
             let link = element.href;
-            if (!extractAll) {
+            if (onlyVerifyDangerous.onlyVerifyDangerous === true) {
                 if (isFileExtensionDangerous(link)) {
                     urls.add(link);
                 }
@@ -104,6 +93,8 @@ function extractLinks() {
             }
         }
     });
+    console.debug("Urls found: \n");
+    console.debug(Array.from(urls.values()));
     return urls;
 }
 
@@ -113,7 +104,7 @@ function extractLinks() {
 async function extractData() {
     checksums = filterHashes(extractPattern(CHECKSUM_VALUE_REGEX));
     algorithms = extractPattern(CHECKSUM_ALG_REGEX);
-    urls = extractLinks();
+    urls = await extractLinks();
     let msgFailed = () => {
         console.debug("Failed to send message")
     }

@@ -10,5 +10,21 @@
     "lang": {
         "message": "en",
         "description": "Language variable"
+    },
+    "prefSavedMsg": {
+        "message": "Preferences saved!",
+        "description": "The message displayed when saving preferences on the options page"
+    },
+    "prefMainSectionTitle": {
+        "message": "Preferences",
+        "description": "Title of the main section of the options page"
+    },
+    "prefVerifSectionTitle": {
+        "message": "Verification",
+        "description": "Title of the verification sub-section of the options page"
+    },
+    "prefVerifCheckboxText": {
+        "message": "Only verify files considered dangerous (e.g. executables, archives)",
+        "description": "Question about only verifying dangerous files"
     }
 }

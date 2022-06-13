@@ -145,7 +145,7 @@ async function computeHashes(filename, hashes) {
                 console.log(
                     "Computed hashes for file: " + filename + " :\n"
                 );
-                console.log(Object.values(hashValuesMap));
+                console.log(Array.from(hashValuesMap.values()));
                 console.debug("Total size (bytes): " + totalByteLen);
                 reader.releaseLock();
             } else {
