@@ -1,7 +1,9 @@
 function save_options() {
     let onlyVerifyDangerous = document.getElementById('filetypes').checked;
+    // let enableProgressiveHashing = document.getElementById('progressive-hashing').checked;
     chrome.storage.sync.set({
-        "onlyVerifyDangerous": onlyVerifyDangerous
+        "onlyVerifyDangerous": onlyVerifyDangerous,
+        // "enableProgressiveHashing": enableProgressiveHashing
     }, () => {
         // Update status to let user know options were saved.
         let status = document.getElementById('status');
@@ -21,13 +23,19 @@ function restore_options() {
     chrome.storage.sync.get(["onlyVerifyDangerous"]
     , ({onlyVerifyDangerous}) => {
         document.getElementById('filetypes').checked = onlyVerifyDangerous;
-        console.debug("Preferences restored");
     });
+    // chrome.storage.sync.get(["enableProgressiveHashing"]
+    //     , ({enableProgressiveHashing}) => {
+    //     document.getElementById("progressive-hashing").checked = enableProgressiveHashing;
+    // });
+    console.debug("Preferences restored");
 }
 
 document.getElementById("pref-header").innerHTML = chrome.i18n.getMessage("prefMainSectionTitle");
 document.getElementById("verif-header").innerHTML = chrome.i18n.getMessage("prefVerifSectionTitle");
 document.getElementById("filetypes-checkbox-text").innerHTML = chrome.i18n.getMessage("prefVerifCheckboxText");
+document.getElementById("progressive-hashing-text").innerHTML = chrome.i18n.getMessage("prefParallelHashCheckboxText");
+document.getElementById("progressive-hashing").disabled = true;
 document.addEventListener('DOMContentLoaded', restore_options);
 document.getElementById('save').addEventListener('click',
     save_options);

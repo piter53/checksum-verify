@@ -26,5 +26,9 @@
     "prefVerifCheckboxText": {
         "message": "Only verify files considered dangerous (e.g. executables, archives)",
         "description": "Question about only verifying dangerous files"
+    },
+    "prefParallelHashCheckboxText": {
+        "message": "Enable hashing on-the-fly (Experimental!)",
+        "description": "Question about enabling experimental parallel hashing"
     }
 }
