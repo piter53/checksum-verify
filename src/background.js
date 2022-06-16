@@ -58,16 +58,30 @@ chrome.downloads.onChanged.addListener(async (downloadDelta) => {
             downloads[id].state = "complete";
             if (downloads[id].checksums === undefined ||
                 downloads[id].algorithms === undefined) {
+                chrome.tabs.sendMessage(downloads[id].tab.id, {
+                    type: "finishedNoValues"
+                });
                 console.log("Cannot verify the hash value!")
             } else {
+                chrome.tabs.sendMessage(downloads[id].tab.id, {
+                    type: "finished"
+                });
                 let computedHashes = await computeHashes(downloads[id].filename,
                     getHashesFromNames(downloads[id].tab.algorithms));
                 downloads[id].computedHashes = computedHashes;
+                let isValid;
                 if (downloads[id].checksums.filter(value => computedHashes.includes(value))) {
                     console.log("The checksum is valid!");
+                    isValid = true;
                 } else {
                     console.log("The checksum is NOT valid!");
+                    isValid = false;
                 }
+                downloads[id].isValid = isValid;
+                chrome.tabs.sendMessage(downloads[id].tab.id, {
+                    type: "checksumComputed",
+                    isValid: isValid
+                });
             }
         } else if (state === "interrupted") {
             delete downloads[downloadDelta.id];
@@ -181,12 +195,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             tabsData.unshift({
                 urls: message.urls,
                 checksums: message.checksums,
-                algorithms: message.algorithms
+                algorithms: message.algorithms,
+                id: sender.tab.id
             });
             break;
         case "noContent":
             tabsData.unshift({
-                urls: message.urls
+                urls: message.urls,
+                id: sender.tab.id
             })
             break;
         case "keepAlive":

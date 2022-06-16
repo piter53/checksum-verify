@@ -30,5 +30,38 @@
     "prefParallelHashCheckboxText": {
         "message": "Enable hashing on-the-fly (Experimental!)",
         "description": "Question about enabling experimental parallel hashing"
+    },
+    "popupDownloadFinishedTitle": {
+        "message": "Checksums are being calculated!",
+        "description": "A title of the message informing user about a start of checksum computation upon a finished download"
+    },
+    "popupDownloadFinishedMessage": {
+        "message": "Hang in there while we calculate the checksums of your file",
+        "description": "A message informing user about a start of checksum computation upon a finished download"
+    },
+    "popupDownloadFinishedNoValuesTitle": {
+        "message": "Cannot compute hashes!",
+        "description": "A title of a message informing user about inability to perform checksum computation upon a finished download"
+    },
+    "popupDownloadFinishedNoValuesMessage": {
+        "message": "Sorry! No algorithm names and/or hash values have been found on the website. We cannot verify your file.",
+        "description": "A message informing user about inability to perform checksum computation upon a finished download"
+    },
+    "popupChecksumComputedValidTitle": {
+        "message": "Checksum is valid!",
+        "description": "A title of a message informing user about a valid checksum"
+    },
+    "popupChecksumComputedValidMessage": {
+        "message": "The computed hash matches at least one value found on the web site",
+        "description": "A message informing user about a valid checksum"
+    },
+    "popupChecksumComputedInvalidTitle": {
+        "message": "Checksum invalid!",
+        "description": "A title of a message informing user about an invalid checksum"
+    },
+    "popupChecksumComputedInvalidMessage": {
+        "message": "Sorry! The computed hash does not match any values found on the web site. You might want to consider deleting this file",
+        "description": "A message informing user about an invalid checksum"
     }
+
 }

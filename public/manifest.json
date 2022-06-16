@@ -36,5 +36,15 @@
                 "contentScript.js"
             ]
         }
+    ],
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "icons/logo.png"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
     ]
 }
