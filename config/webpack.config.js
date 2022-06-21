@@ -22,7 +22,12 @@ const config = (env, argv) =>
         },
         plugins: [
             new HtmlWebpackPlugin({
-                template: "src/popup.html"
+                template: "src/options.html",
+                filename: "options.html"
+            }),
+            new HtmlWebpackPlugin({
+                template: "src/popup.html",
+                filename: "popup.html"
             })
         ],
         devtool: argv.mode === 'production' ? false : 'source-map',

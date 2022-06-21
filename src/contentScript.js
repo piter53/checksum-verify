@@ -12,6 +12,7 @@ const DANGEROUS_EXTENSIONS = ["bin", "apk", "jar", "ahk", "bms", "oxe", "sk", "x
 let checksums = [];
 let algorithms = [];
 let urls = [];
+let alivePeriod = 300;
 
 function extractPattern(pattern) {
     let set = new Set();
@@ -122,7 +123,7 @@ async function extractData() {
             urls: [...urls]
         }).catch(() => msgFailed());
     }
-    for (let i = 0; i < 120; i++) {
+    for (let i = 0; i < alivePeriod; i++) {
         const sleep = ms => new Promise(res => setTimeout(res, ms));
         await sleep(1000);
         chrome.runtime.sendMessage({type: "keepAlive"}).catch(() => msgFailed())
@@ -168,7 +169,7 @@ let borderRadius = "10px";
 mainDiv.style.borderTopLeftRadius = borderRadius;
 mainDiv.style.borderTopRightRadius = borderRadius;
 mainDiv.style.borderTop = "solid";
-mainDiv.style.borderColor = "#0000ff";
+mainDiv.style.borderColor = "#0b2bbe";
 mainDiv.style.padding = "5px";
 mainDiv.style.float = "left";
 // mainDiv.style.verticalAlign = "middle";
@@ -202,13 +203,12 @@ logoText.innerHTML = chrome.i18n.getMessage("extName").toUpperCase();
 logoText.style.fontSize = "9px";
 logoText.style.margin = "0px";
 logoText.style.textAlign = "center";
+logoText.style.color = "black";
+logoDiv.appendChild(logoText);
 
 // Div holding title and message
 const textDiv = document.createElement("div");
-logoDiv.appendChild(logoText);
 textDiv.style.display = "inline-block";
-mainDiv.style.bottom = "0";
-mainDiv.style.left = "0";
 
 // Popup title
 const title = document.createElement("p");
@@ -216,6 +216,7 @@ title.innerHTML = "Sample title text";
 title.style.fontSize = "20px";
 title.style.margin = "5px";
 title.style.marginBottom = "20px";
+title.style.color = "black";
 textDiv.appendChild(title);
 
 // Popup message
@@ -223,6 +224,7 @@ const message = document.createElement("p");
 message.innerHTML = "Sample message text";
 message.style.fontSize = "15px";
 message.style.margin = "5px";
+message.style.color = "black";
 textDiv.appendChild(message);
 
 mainDiv.appendChild(logoDiv);
@@ -230,7 +232,7 @@ mainDiv.appendChild(textDiv);
 try {
     document.body.appendChild(shadowRoot);
     console.debug("Appended shadow DOM to the document!");
-    displayBanner();
+    // displayBanner();
 } catch (e) {
     console.debug("Cannot append shadow DOM: " + e.toString());
 }

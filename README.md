@@ -2,17 +2,19 @@
 
 Automatically verify cryptographic digests of downloaded and uploaded files
 
-## Features
-
-TODO
-
 ## Install
+First, install node dependencies  
+`npm install`
 
-[**Chrome** extension]() <!-- TODO: Add chrome extension link inside parenthesis -->
+Then, run the following to build the project:  
+`export NODE_OPTIONS=--openssl-legacy-provider && webpack --mode=production --config config/webpack.config.js`   
 
-## Contribution
+For the moment being, markdown files from **md** folder have to be rendered to HTML and copied to **build** folder manually.  
 
-Suggestions and pull requests are welcomed!
+To load the project in Chrome:  
+1. Go to *Extensions* 
+2. Click **Load Unpacked** 
+3. Select **build** folder
 
 ---
 
