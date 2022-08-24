@@ -28,7 +28,22 @@ const config = (env, argv) =>
             new HtmlWebpackPlugin({
                 template: "src/popup.html",
                 filename: "popup.html"
+            }),
+            new HtmlWebpackPlugin({
+                template: "src/hashes.html",
+                filename: "hashes.html"
+            }),
+            new HtmlWebpackPlugin({
+                template: "src/test-page.html",
+                filename: "test-page.html"
+            }),
+            new HtmlWebpackPlugin({
+                template: "src/welcome-page.html",
+                filename: "welcome-page.html"
             })
+
+
+
         ],
         devtool: argv.mode === 'production' ? false : 'source-map',
     });

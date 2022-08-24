@@ -10,9 +10,7 @@ First, install node dependencies
 `npm install`
 
 Then, run the following to build the project  
-`export NODE_OPTIONS=--openssl-legacy-provider && webpack --mode=production --config config/webpack.config.js`   
-
-For the moment being, markdown files from **md** folder have to be rendered to HTML and copied to **build** folder manually.  
+`npm run build`
 
 To load the project in Chrome:  
 1. Go to *Extensions* 

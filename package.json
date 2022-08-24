@@ -4,9 +4,9 @@
     "description": "Automatically verify cryptographic digests of downloaded and uploaded files",
     "private": true,
     "scripts": {
-        "watch": "export NODE_OPTIONS=--openssl-legacy-provider && webpack --mode=development --watch --config config/webpack.config.js",
-        "debug": "export NODE_OPTIONS=\"--openssl-legacy-provider --inspect\" && webpack --mode=development --debug --config config/webpack.config.js",
-        "build": "export NODE_OPTIONS=--openssl-legacy-provider && webpack --mode=production --config config/webpack.config.js"
+        "watch": "mdown --header md/header.html --footer md/footer.html --input \"md/*.md\" --output src && export NODE_OPTIONS=--openssl-legacy-provider && webpack --mode=development --watch --config config/webpack.config.js",
+        "debug": "mdown --header md/header.html --footer md/footer.html --input \"md/*.md\" --output src && export NODE_OPTIONS=\"--openssl-legacy-provider --inspect\" && webpack --mode=development --debug --config config/webpack.config.js",
+        "build": "mdown --header md/header.html --footer md/footer.html --input \"md/*.md\" --output src && export NODE_OPTIONS=--openssl-legacy-provider && webpack --mode=production --config config/webpack.config.js"
     },
     "devDependencies": {
         "copy-webpack-plugin": "^6.4.1",
@@ -18,7 +18,8 @@
         "size-plugin": "^2.0.2",
         "webpack": "^5.72.1",
         "webpack-cli": "^4.9.2",
-        "webpack-merge": "^5.8.0"
+        "webpack-merge": "^5.8.0",
+        "gh-markdown-cli": "^0.2.0"
     },
     "dependencies": {
         "crypto-js": "^4.1.1"

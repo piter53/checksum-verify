@@ -1,0 +1,24 @@
+<h1><img src="public/icons/icon_48.png" width="45" align="left"> Checksum Verify</h1>
+
+<p>Automatically verify cryptographic digests of downloaded files</p>
+
+<h2>Features</h2>
+
+<ul>
+<li>Supports SHA1, SHA2, SHA3, and  MD5</li>
+<li>Can verify either arbitrary file formats, or only potentially dangerous filetypes - based on the user preference</li>
+</ul>
+
+<h2>Install</h2>
+
+<p>First, install node dependencies <br /><br /><code>npm install</code></p>
+
+<p>Then, run the following to build the project <br /><br /><code>export NODE_OPTIONS=--openssl-legacy-provider &amp;&amp; webpack --mode=production --config config/webpack.config.js</code>   </p>
+
+<p>For the moment being, markdown files from <strong>md</strong> folder have to be rendered to HTML and copied to <strong>build</strong> folder manually.  </p>
+
+<p>To load the project in Chrome: <br /><br />1. Go to <em>Extensions</em> <br />2. Click <strong>Load Unpacked</strong> <br />3. Select <strong>build</strong> folder</p>
+
+<hr />
+
+<p>This project was bootstrapped with <a href="https://github.com/dutiyesh/chrome-extension-cli">Chrome Extension CLI</a></p>

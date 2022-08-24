@@ -11,9 +11,14 @@ arch-diagram*
 .DS_Store
 
 # test files
-test/
+test/*
 
 # old icons
 /public/icons/old-icons
 
+# npm's log file
 npm-debug.log*
+
+# auto-generated html files
+src/*page.html
+src/hashes.html
